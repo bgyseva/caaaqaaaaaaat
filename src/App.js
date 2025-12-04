@@ -2,263 +2,207 @@ import { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
+  // все состояния 
   const [images, setImages] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [favorites, setFavorites] = useState([]);
-  const [showFavorites, setShowFavorites] = useState(false);
+  const [searchText, setSearchText] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [favoriteCats, setFavoriteCats] = useState([]);
+  const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
 
-  const localCatImages = [
-    {
-      id: 1,
-      url: "/images/cat1.jpg",
-      name: "Рыжик",
-      tags: ["рыжий", "игривый", "молодой"],
-      favorite: false
-    },
-    {
-      id: 2,
-      url: "/images/cat2.jpg", 
-      name: "Мурка",
-      tags: ["серый", "спокойный", "взрослый"],
-      favorite: false
-    },
-    {
-      id: 3,
-      url: "/images/cat3.jpg",
-      name: "Барсик",
-      tags: ["полосатый", "ласковый", "домашний"],
-      favorite: false
-    },
-    {
-      id: 4,
-      url: "/images/cat4.jpg",
-      name: "Снежок",
-      tags: ["белый", "пушистый", "нежный"],
-      favorite: false
-    },
-    {
-      id: 5,
-      url: "/images/cat5.jpg",
-      name: "Васька",
-      tags: ["черный", "хитрый", "ночной"],
-      favorite: false
-    },
-    {
-      id: 6,
-      url: "/images/cat6.jpg",
-      name: "Дымок",
-      tags: ["дымчатый", "элегантный", "спокойный"],
-      favorite: false
-    },
-    {
-      id: 7,
-      url: "/images/cat7.jpg",
-      name: "Персик",
-      tags: ["рыжий", "ласковый", "молодой"],
-      favorite: false
-    },
-    {
-      id: 8,
-      url: "/images/cat8.jpg",
-      name: "Зефирка",
-      tags: ["белый", "пушистый", "сладкий"],
-      favorite: false
-    },
-    {
-      id: 9,
-      url: "/images/cat9.jpg",
-      name: "Тигра",
-      tags: ["полосатый", "дикий", "активный"],
-      favorite: false
-    },
-    {
-      id: 10,
-      url: "/images/cat10.jpg",
-      name: "Серафима",
-      tags: ["серый", "мудрая", "спокойная"],
-      favorite: false
-    },
-    {
-      id: 11,
-      url: "/images/cat11.jpg",
-      name: "Ночка",
-      tags: ["черный", "загадочный", "ночная"],
-      favorite: false
-    },
-    {
-      id: 12,
-      url: "/images/cat12.jpg",
-      name: "Пушок",
-      tags: ["белый", "пушистый", "добрый"],
-      favorite: false
-    }
+  // массив с котиками 
+  const catsData = [
+    { id: 1, src: "/images/cat1.jpg", name: "Рыжик", tags: ["рыжий", "игривый", "молодой"], fav: false },
+    { id: 2, src: "/images/cat2.jpg", name: "Мурка", tags: ["серый", "спокойный", "взрослый"], fav: false },
+    { id: 3, src: "/images/cat3.jpg", name: "Барсик", tags: ["полосатый", "ласковый", "домашний"], fav: false },
+    { id: 4, src: "/images/cat4.jpg", name: "Снежок", tags: ["белый", "пушистый", "нежный"], fav: false },
+    { id: 5, src: "/images/cat5.jpg", name: "Васька", tags: ["черный", "хитрый", "ночной"], fav: false },
+    { id: 6, src: "/images/cat6.jpg", name: "Дымок", tags: ["дымчатый", "элегантный", "спокойный"], fav: false },
+    { id: 7, src: "/images/cat7.jpg", name: "Персик", tags: ["рыжий", "ласковый", "молодой"], fav: false },
+    { id: 8, src: "/images/cat8.jpg", name: "Зефирка", tags: ["белый", "пушистый", "сладкий"], fav: false },
+    { id: 9, src: "/images/cat9.jpg", name: "Тигра", tags: ["полосатый", "дикий", "активный"], fav: false },
+    { id: 10, src: "/images/cat10.jpg", name: "Серафима", tags: ["серый", "мудрая", "спокойная"], fav: false },
+    { id: 11, src: "/images/cat11.jpg", name: "Ночка", tags: ["черный", "загадочный", "ночная"], fav: false },
+    { id: 12, src: "/images/cat12.jpg", name: "Пушок", tags: ["белый", "пушистый", "добрый"], fav: false }
   ];
 
-  // Загрузка избранного из localStorage
+  // загружаем избранное когда сайт открывается
   useEffect(() => {
-    const savedFavorites = localStorage.getItem('catFavorites');
-    if (savedFavorites) {
-      setFavorites(JSON.parse(savedFavorites));
+    const savedFavs = localStorage.getItem('myCatFavorites');
+    if (savedFavs) {
+      try {
+        setFavoriteCats(JSON.parse(savedFavs));
+      } catch (e) {
+        console.log('Ошибка при загрузке избранного:', e);
+      }
     }
-    // Показываем локальные картинки при загрузке
-    setImages(localCatImages);
+    // показываем всех котиков сначала
+    setImages(catsData);
   }, []);
 
-  // Сохранение избранного в localStorage
+  // сохраняем избранное когда оно меняется
   useEffect(() => {
-    localStorage.setItem('catFavorites', JSON.stringify(favorites));
-  }, [favorites]);
+    localStorage.setItem('myCatFavorites', JSON.stringify(favoriteCats));
+  }, [favoriteCats]);
 
-  // Функция поиска по вашим картинкам
-  const searchImages = () => {
-    if (!searchTerm.trim()) {
-      setImages(localCatImages);
-      setError('');
+  // функция поиска котиков
+  const handleSearch = () => {
+    if (!searchText.trim()) {
+      setImages(catsData);
+      setErrorMessage('');
       return;
     }
 
-    setLoading(true);
+    setIsLoading(true);
     
+    // делаем задержку как будто ищем
     setTimeout(() => {
-      const filteredImages = localCatImages.filter(cat => 
-        cat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        cat.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-      );
+      const foundCats = catsData.filter(cat => {
+        const nameMatch = cat.name.toLowerCase().includes(searchText.toLowerCase());
+        const tagMatch = cat.tags.some(tag => tag.toLowerCase().includes(searchText.toLowerCase()));
+        return nameMatch || tagMatch;
+      });
       
-      setImages(filteredImages);
+      setImages(foundCats);
       
-      if (filteredImages.length === 0) {
-        setError('Котики по вашему запросу не найдены');
+      if (foundCats.length === 0) {
+        setErrorMessage('К сожалению, таких котиков нет :(');
       } else {
-        setError('');
+        setErrorMessage('');
       }
       
-      setLoading(false);
-    }, 500);
+      setIsLoading(false);
+    }, 600);
   };
 
-  // Показать все картинки
-  const showAllCats = () => {
-    setImages(localCatImages);
-    setSearchTerm('');
-    setError('');
-    setShowFavorites(false);
+  // показать всех котиков
+  const showAll = () => {
+    setImages(catsData);
+    setSearchText('');
+    setErrorMessage('');
+    setShowOnlyFavorites(false);
   };
 
-  // Показать только избранное
-  const showFavoritesOnly = () => {
-    setShowFavorites(!showFavorites);
-    if (!showFavorites) {
-      setImages(favorites);
+  // показать избранных котиков
+  const toggleFavoritesView = () => {
+    const newShowFavorites = !showOnlyFavorites;
+    setShowOnlyFavorites(newShowFavorites);
+    if (newShowFavorites) {
+      setImages(favoriteCats);
     } else {
-      setImages(localCatImages);
+      setImages(catsData);
     }
   };
 
-  // Добавление/удаление из избранного
-  const toggleFavorite = (image) => {
-    const isFavorite = favorites.find(fav => fav.id === image.id);
+  // добавить или убрать из избранного
+  const handleFavoriteClick = (cat) => {
+    const alreadyFavorite = favoriteCats.find(f => f.id === cat.id);
     
-    if (isFavorite) {
-      setFavorites(favorites.filter(fav => fav.id !== image.id));
+    if (alreadyFavorite) {
+      // убираем из избранного
+      setFavoriteCats(favoriteCats.filter(f => f.id !== cat.id));
     } else {
-      setFavorites([...favorites, { ...image, favorite: true }]);
+      // добавляем в избранное
+      setFavoriteCats([...favoriteCats, { ...cat, fav: true }]);
     }
 
-    // Обновляем состояние в основном массиве
+    // обновляем картинку в основном списке
     const updatedImages = images.map(img => 
-      img.id === image.id ? { ...img, favorite: !isFavorite } : img
+      img.id === cat.id ? { ...img, fav: !alreadyFavorite } : img
     );
     setImages(updatedImages);
   };
 
-  // Проверка, находится ли изображение в избранном
-  const isFavorite = (imageId) => {
-    return favorites.some(fav => fav.id === imageId);
+  // проверка - в избранном ли котик
+  const checkIfFavorite = (catId) => {
+    return favoriteCats.some(f => f.id === catId);
   };
 
-  // Отображение картинок в зависимости от состояния
-  const displayedImages = showFavorites ? favorites : images;
+  // котики для показа
+  const catsToShow = showOnlyFavorites ? favoriteCats : images;
 
   return (
     <div className="app">
-      <div className="header">
-        <h1>🐱 Моя галерея котиков</h1>
-        <p>Мои любимые котики - {localCatImages.length} фото</p>
-      </div>
+      <header className="header">
+        <h1> Галерея милых котиков</h1>
+        <p>Здесь я храню фотографии милых котиков - всего {catsData.length} фото!</p>
+      </header>
 
       <div className="controls">
         <input
           type="text"
-          placeholder="Поиск по имени или описанию..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && searchImages()}
+          placeholder="Искать по имени или описанию..."
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              handleSearch();
+            }
+          }}
           className="search-input"
         />
         <button 
-          onClick={searchImages}
-          disabled={loading}
+          onClick={handleSearch}
+          disabled={isLoading}
           className="search-btn"
         >
-          {loading ? 'Поиск...' : 'Найти котика'}
+          {isLoading ? 'Ищем...' : 'Найти котика'}
         </button>
         <button 
-          onClick={showAllCats}
+          onClick={showAll}
           className="search-btn"
         >
           Все котики
         </button>
         <button 
-          onClick={showFavoritesOnly}
-          className={showFavorites ? 'search-btn active' : 'search-btn'}
+          onClick={toggleFavoritesView}
+          className={showOnlyFavorites ? 'search-btn active-fav' : 'search-btn'}
         >
-          {showFavorites ? 'Все котики' : `Избранные (${favorites.length})`}
+          {showOnlyFavorites ? 'Показать всех' : `Избранные (${favoriteCats.length})`}
         </button>
       </div>
 
-      {error && <div className="error">{error}</div>}
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
 
-      {loading && <div className="loading">Ищем котиков... 🐾</div>}
+      {isLoading && <div className="loading-message">Загружаем котиков... 🐾</div>}
 
-      {!loading && displayedImages.length > 0 && (
-        <div className="images-section">
+      {!isLoading && catsToShow.length > 0 && (
+        <section className="cats-section">
           <h2 className="section-title">
-            {showFavorites ? 'Любимые котики' : 'Все котики'} ({displayedImages.length})
+            {showOnlyFavorites ? 'Мои любимые котики' : 'Все котики в галерее'} ({catsToShow.length})
           </h2>
-          <div className="images-grid">
-            {displayedImages.map((image) => (
-              <div key={image.id} className="image-card">
+          <div className="cats-grid">
+            {catsToShow.map((cat) => (
+              <div key={cat.id} className="cat-card">
                 <img 
-                  src={image.url} 
-                  alt={image.name}
-                  onClick={() => window.open(image.url, '_blank')}
+                  src={cat.src} 
+                  alt={cat.name}
+                  onClick={() => window.open(cat.src, '_blank')}
+                  className="cat-image"
                 />
-                <div className="image-info">
-                  <h3>{image.name}</h3>
-                  <div className="image-tags">
-                    {image.tags.map((tag, index) => (
-                      <span key={index} className="tag">{tag}</span>
+                <div className="cat-info">
+                  <h3>{cat.name}</h3>
+                  <div className="tags-container">
+                    {cat.tags.map((tag, idx) => (
+                      <span key={idx} className="cat-tag">{tag}</span>
                     ))}
                   </div>
                   <button 
-                    onClick={() => toggleFavorite(image)}
-                    className="favorite-btn"
+                    onClick={() => handleFavoriteClick(cat)}
+                    className="favorite-button"
                   >
-                    {isFavorite(image.id) ? '❤️ Убрать' : '🤍 В избранное'}
+                    {checkIfFavorite(cat.id) ? '❤️ Уже в избранном' : '🤍 Добавить в избранное'}
                   </button>
                 </div>
               </div>
             ))}
           </div>
-        </div>
+        </section>
       )}
 
-      {!loading && displayedImages.length === 0 && !error && (
-        <div className="no-results">
-          <p>Котики не найдены</p>
+      {!isLoading && catsToShow.length === 0 && !errorMessage && (
+        <div className="empty-message">
+          <p>Тут пока нет котиков...</p>
         </div>
       )}
     </div>
