@@ -2,9 +2,10 @@
 <html lang="ru">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="icon" href="favicon.ico" />
+    <link rel="apple-touch-icon" href="logo192.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#667eea" />
     <meta
       name="description"
       content="Поиск милых картинок с котиками"
@@ -12,7 +13,16 @@
     <title>Котики - поиск картинок</title>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>
+      <div style="text-align: center; padding: 50px; color: #333;">
+        <h2>Для работы приложения требуется JavaScript</h2>
+        <p>Пожалуйста, включите JavaScript в настройках вашего браузера.</p>
+      </div>
+    </noscript>
     <div id="root"></div>
+    <script>
+      // Проверка для отладки
+      console.log('Приложение загружается...');
+    </script>
   </body>
 </html>
